@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Routine Tracker</title>
+<meta name="description" content="Track daily routine tasks, completion and achievement reports.">
+
+<!-- PWA: installable on Android, runs offline -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4062d8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Routine">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <h1>Daily Routine Tracker</h1>
+  <p id="todayLabel" class="today-label"></p>
+  <nav class="tabs" id="tabs">
+    <a href="#home" class="tab" data-view="home">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10.8 12 3.5l9 7.3"/>
+        <path d="M5.5 9.4V20h13V9.4"/>
+        <path d="M9.8 20v-5.6h4.4V20"/>
+      </svg>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="#tasks" class="tab" data-view="tasks">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m3 6.5 1.8 1.8L8.2 4.9"/>
+        <path d="m3 17.5 1.8 1.8 3.4-3.4"/>
+        <path d="M11.5 6.6H21"/>
+        <path d="M11.5 12H21"/>
+        <path d="M11.5 17.4H21"/>
+      </svg>
+      <span class="tab-label">Tasks</span>
+    </a>
+    <a href="#report" class="tab" data-view="report">
+      <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3.5 20.5h17"/>
+        <path d="M7 20.5v-6.8"/>
+        <path d="M12 20.5V4.5"/>
+        <path d="M17 20.5v-10"/>
+      </svg>
+      <span class="tab-label">Report</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== Home: progress + today's checklist ===== -->
+  <section class="layout view" id="view-home">
+
+    <div class="card card-wide">
+      <h2>Daily Achievement Progress</h2>
+      <div class="progress-wrap">
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <span id="progressPercent" class="progress-percent">0%</span>
+      </div>
+      <p id="progressSummary" class="hint"></p>
+      <button id="resetDayBtn" class="btn btn-ghost">Reset Today's Checklist</button>
+    </div>
+
+    <div class="card card-wide">
+      <h2>Today's Routine Checklist</h2>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Routine Task</th>
+              <th class="center">Completed</th>
+              <th>Status</th>
+              <th class="right">Achievement %</th>
+            </tr>
+          </thead>
+          <tbody id="checklistBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-wide backup-notice" id="backupNotice" hidden>
+      <div class="backup-notice-text">
+        <strong id="backupNoticeTitle">Back up your data</strong>
+        <p class="hint" id="backupNoticeBody"></p>
+      </div>
+      <button id="backupNowBtn" class="btn btn-primary">Back Up Now</button>
+    </div>
+
+  </section>
+
+  <!-- ===== Routine Tasks ===== -->
+  <section class="layout view" id="view-tasks">
+    <div class="card card-wide">
+      <h2>Add Routine Task</h2>
+      <form id="addTaskForm" class="add-form" autocomplete="off">
+        <input id="taskInput" type="text" placeholder="e.g. Morning Walk" maxlength="60" required>
+        <button type="submit" class="btn btn-primary">Add Task</button>
+      </form>
+      <ul id="taskManager" class="task-manager"></ul>
+      <p class="hint">Editing or deleting a task only affects today onward. Past days keep their original record.</p>
+    </div>
+  </section>
+
+  <!-- ===== Report: monthly stats, chart, export ===== -->
+  <section class="layout view" id="view-report">
+
+    <div class="card card-wide">
+      <h2>Monthly Report Dashboard</h2>
+      <div class="month-picker">
+        <label for="monthSelect">Month</label>
+        <select id="monthSelect"></select>
+        <label for="yearSelect">Year</label>
+        <select id="yearSelect"></select>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><span class="stat-value" id="statMonthly">0%</span><span class="stat-label">Monthly Achievement</span></div>
+        <div class="stat"><span class="stat-value" id="statDays">0</span><span class="stat-label">Days Tracked</span></div>
+        <div class="stat"><span class="stat-value" id="statCompleted">0</span><span class="stat-label">Tasks Completed</span></div>
+        <div class="stat"><span class="stat-value" id="statMissed">0</span><span class="stat-label">Tasks Missed</span></div>
+        <div class="stat"><span class="stat-value" id="statAverage">0%</span><span class="stat-label">Avg Daily Achievement</span></div>
+      </div>
+    </div>
+
+    <div class="card card-wide">
+      <h2>Daily Performance Chart</h2>
+      <div class="legend">
+        <span><i class="swatch good"></i>80–100%</span>
+        <span><i class="swatch ok"></i>50–79%</span>
+        <span><i class="swatch bad"></i>Below 50%</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+      <p id="chartEmpty" class="hint"></p>
+    </div>
+
+    <div class="card card-wide">
+      <h2>Backup &amp; Export</h2>
+      <div class="file-status">
+        <span id="backupDot" class="dot"></span>
+        <span id="backupStatus">Never backed up</span>
+      </div>
+      <div class="btn-row">
+        <button id="backupBtn" class="btn btn-primary">Back Up Now</button>
+        <button id="importBtn" class="btn btn-outline">Restore Backup (.json)</button>
+        <button id="exportBtn" class="btn btn-outline">Export Report (.txt)</button>
+        <input id="importInput" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p class="hint">Your data saves automatically on this device. A backup is a copy kept somewhere else —
+        on a phone it opens the share sheet (save to Google Drive), on a computer it downloads a .json file.
+        Restore reads that file back. The .txt file is a readable report, not a backup.</p>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
