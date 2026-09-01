@@ -657,6 +657,18 @@ function showView(name) {
 
 const viewFromHash = () => window.location.hash.replace('#', '');
 
+/* ---------- notes ---------- */
+
+const notes = document.getElementById("notes");
+
+// Load saved note when page opens
+notes.value = localStorage.getItem("my_notes") || "";
+
+// Save automatically whenever user types
+notes.addEventListener("input", function () {
+    localStorage.setItem("my_notes", notes.value);
+});
+
 /* ---------- wiring ---------- */
 
 function render() {
