@@ -100,7 +100,7 @@ body {
 .card-wide { grid-column: 1 / -1; }
 .card h2 { margin: 0 0 14px; font-size: 1.05rem; letter-spacing: -.01em; }
 
-.hint { color: var(--muted); font-size: .85rem; margin: 12px 0 0; }
+.hint { color: var(--muted); font-size: .85rem; margin: 5px 0 12px; }
 
 /* Buttons */
 .btn {
@@ -129,7 +129,16 @@ body {
 .btn-ghost:hover { border-color: var(--bad); color: var(--bad); }
 #resetDayBtn { margin-top: 14px; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
-
+.notes {
+  width: 100%;
+  min-height: 80px;
+  font: inherit;
+  font-size: .9rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
 /* Backup status */
 .file-status {
   display: flex;
